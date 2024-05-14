@@ -57,19 +57,19 @@ spec:
   template:
     metadata:
       annotations:
-        k8s.v1.cni.cncf.io/networks: '[{"name": "macvlan-multus", "ips": [ "192.168.100.203/24"]}]'
+        k8s.v1.cni.cncf.io/networks: 'macvlan-multus'
         sidecar.istio.io/inject: "true"
       labels:
         epc-mode: webui
-    spec:    
+    spec:
       containers:
       - name: webui
         imagePullPolicy: {{ .Values.webui.image.pullPolicy }}
-        image: "{{ .Values.webui.image.repository }}:{{ .Values.webui.image.tag }}"      
+        image: "{{ .Values.webui.image.repository }}:{{ .Values.webui.image.tag }}"
         env:
         - name: DB_URI
           value: mongodb://mongodb-svc/open5gs
         - name: NODE_ENV
-          value: "production"  
+          value: "production"
         - name: HOSTNAME
-          value: '0.0.0.0'               
+          value: '0.0.0.0'
