@@ -57,7 +57,7 @@ spec:
   template:
     metadata:
       annotations:
-        k8s.v1.cni.cncf.io/networks: 'macvlan-multus'
+        # k8s.v1.cni.cncf.io/networks: 'green-network'
         sidecar.istio.io/inject: "true"
       labels:
         epc-mode: webui

@@ -11,8 +11,8 @@ spec:
       name: debug-app
   template:
     metadata:
-      annotations:
-        k8s.v1.cni.cncf.io/networks: 'macvlan-multus'
+      # annotations:
+      #   k8s.v1.cni.cncf.io/networks: 'green-network'
       labels:
         name: debug-app
     spec:
