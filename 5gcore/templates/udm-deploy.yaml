@@ -30,11 +30,6 @@ spec:
       labels:
         epc-mode: udm
     spec:
-      securityContext:
-        runAsUser: 0
-        privileged: true
-        capabilities:
-          add: ["NET_ADMIN", "SYS_ADMIN"]
       containers:
         - name: udm
           image: "{{ .Values.open5gcore.image.repository }}:{{ .Values.open5gcore.image.tag }}"

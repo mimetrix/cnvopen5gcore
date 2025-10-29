@@ -30,17 +30,10 @@ spec:
       labels:
         epc-mode: upf
     spec:   
-      securityContext:
-        runAsUser: 0
-        privileged: true
-        capabilities:
-          add: ["NET_ADMIN", "SYS_ADMIN"]
       containers:
         - name: upf
           image: "{{ .Values.open5gcore.image.repository }}:{{ .Values.open5gcore.image.tag }}"
           imagePullPolicy: {{ .Values.open5gcore.image.pullPolicy }}
-          securityContext:
-            privileged: true
           command: ["/bin/sh", "-c"]
           args:
           - ln -s /dev/net/tun /dev/tun;
