@@ -8,14 +8,14 @@ data:
     mnc: '93'           # Mobile Network Code value (2 or 3 digits)
     nci: '0x000000010'  # NR Cell Identity (36-bit)
     idLength: 32        # NR gNB ID length in bits [22...32]
-    tac: {{ .Values.ran.tac }}             # Tracking Area Code
+    tac: 7              # Tracking Area Code
     linkIp: 0.0.0.0
     ngapIp: 0.0.0.0
     gtpIp: 0.0.0.0
     # List of AMF address information
     amfConfigs:
-      - address: {{ .Values.ran.amf.address }} 
-        port: {{ .Values.ran.amf.port }} 
+      - address: 172.30.99.172
+        port: 38412
     # List of supported S-NSSAIs by this gNB
     slices:
       - sst: 1

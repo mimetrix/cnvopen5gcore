@@ -32,6 +32,8 @@ spec:
     spec:   
       containers:
         - name: upf
+          securityContext:
+            privileged: true
           image: "{{ .Values.open5gcore.image.repository }}:{{ .Values.open5gcore.image.tag }}"
           imagePullPolicy: {{ .Values.open5gcore.image.pullPolicy }}
           command: ["/bin/sh", "-c"]

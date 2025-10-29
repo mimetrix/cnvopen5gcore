@@ -20,11 +20,22 @@ spec:
       - name: gnb
         imagePullPolicy: {{ .Values.ran.image.pullPolicy }}
         image: "{{ .Values.ran.image.repository }}:{{ .Values.ran.image.tag }}" 
-        command: ["/bin/sh","-c","./nr-gnb -c /open5gs/config-map/5gran-gnb-configmap.yaml"]
+        command:
+          - /bin/sh
+          - -c
+          - |
+            sed "s/ngapIp: 0.0.0.0/ngapIp: $POD_IP/g; s/gtpIp: 0.0.0.0/gtpIp: $POD_IP/g" \
+            /open5gs/config-map/5gran-gnb-configmap.yaml > /tmp/gnb-config.yaml
+            ./nr-gnb -c /tmp/gnb-config.yaml
         volumeMounts:
           - name: 5gran-gnb-config
             mountPath: /open5gs/config-map/5gran-gnb-configmap.yaml
             subPath: "5gran-gnb-configmap.yaml"
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
       - name: ue
         imagePullPolicy: {{ .Values.ran.image.pullPolicy }}
         image: "{{ .Values.ran.image.repository }}:{{ .Values.ran.image.tag }}"
@@ -32,24 +43,7 @@ spec:
           privileged: true
         # Dynamically inject pod IP into UE config if placeholders exist (ngapIp / gtpIp set to 0.0.0.0)
         # This is to solve the issue when the traffic sending back from UPF to UE, as UE needs to know the correct IP
-        env:
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        command:
-          - /bin/sh
-          - -c
-          - |
-            set -e
-            CONFIG_IN=/open5gs/config-map/5gran-ue-configmap.yaml
-            CONFIG_OUT=/tmp/ue-config.yaml
-            if grep -q 'ngapIp: 0.0.0.0' "$CONFIG_IN" || grep -q 'gtpIp: 0.0.0.0' "$CONFIG_IN"; then
-              sed "s/ngapIp: 0.0.0.0/ngapIp: ${POD_IP}/; s/gtpIp: 0.0.0.0/gtpIp: ${POD_IP}/" "$CONFIG_IN" > "$CONFIG_OUT"
-            else
-              cp "$CONFIG_IN" "$CONFIG_OUT"
-            fi
-            exec ./nr-ue -c "$CONFIG_OUT"
+        command: ["/bin/sh","-c","./nr-ue -c /open5gs/config-map/5gran-ue-configmap.yaml"]
         volumeMounts:
           - name: 5gran-ue-config
             mountPath: /open5gs/config-map/5gran-ue-configmap.yaml
