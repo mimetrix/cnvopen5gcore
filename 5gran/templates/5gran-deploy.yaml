@@ -30,7 +30,26 @@ spec:
         image: "{{ .Values.ran.image.repository }}:{{ .Values.ran.image.tag }}"
         securityContext:
           privileged: true
-        command: ["/bin/sh","-c","./nr-ue -c /open5gs/config-map/5gran-ue-configmap.yaml"]
+        # Dynamically inject pod IP into UE config if placeholders exist (ngapIp / gtpIp set to 0.0.0.0)
+        # This is to solve the issue when the traffic sending back from UPF to UE, as UE needs to know the correct IP
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        command:
+          - /bin/sh
+          - -c
+          - |
+            set -e
+            CONFIG_IN=/open5gs/config-map/5gran-ue-configmap.yaml
+            CONFIG_OUT=/tmp/ue-config.yaml
+            if grep -q 'ngapIp: 0.0.0.0' "$CONFIG_IN" || grep -q 'gtpIp: 0.0.0.0' "$CONFIG_IN"; then
+              sed "s/ngapIp: 0.0.0.0/ngapIp: ${POD_IP}/; s/gtpIp: 0.0.0.0/gtpIp: ${POD_IP}/" "$CONFIG_IN" > "$CONFIG_OUT"
+            else
+              cp "$CONFIG_IN" "$CONFIG_OUT"
+            fi
+            exec ./nr-ue -c "$CONFIG_OUT"
         volumeMounts:
           - name: 5gran-ue-config
             mountPath: /open5gs/config-map/5gran-ue-configmap.yaml

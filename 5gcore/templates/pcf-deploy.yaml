@@ -29,7 +29,12 @@ spec:
         sidecar.istio.io/inject: "true"
       labels:
         epc-mode: pcf
-    spec:    
+    spec:
+      securityContext:
+        runAsUser: 0
+        privileged: true
+        capabilities:
+          add: ["NET_ADMIN", "SYS_ADMIN"]
       containers:
         - name: pcf
           image: "{{ .Values.open5gcore.image.repository }}:{{ .Values.open5gcore.image.tag }}"

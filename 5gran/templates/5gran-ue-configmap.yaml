@@ -5,7 +5,6 @@ metadata:
 data:
   5gran-ue-configmap.yaml: |
     # IMSI number of the UE. IMSI = [MCC|MNC|MSISDN] (In total 15 or 16 digits)
-    #supi: 'imsi-208930000000003'
     supi: '{{ .Values.ran.user.imsi }}'
     # Mobile Country Code value of HPLMN
     mcc: '208'
@@ -35,6 +34,7 @@ data:
         apn: 'internet'
         slice:
           sst: 1
+          sd: 1
         emergency: false
 
     # Configured NSSAI for this UE by HPLMN
@@ -46,6 +46,7 @@ data:
     default-nssai:
       - sst: 1
         sd: 1
+
     # Supported encryption algorithms by this UE
     integrity:
       IA1: true

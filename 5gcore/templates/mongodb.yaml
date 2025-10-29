@@ -23,6 +23,11 @@ spec:
       labels:
         app: open5gs-mongodb
     spec:
+     # added to fix: open5gs-mongodb chown: changing ownership of '/data/db': Operation not permitted  
+      securityContext:
+        fsGroup: 26
+        runAsUser: 26
+        runAsGroup: 26
       containers:
       - image: free5gmano/nextepc-mongodb
         name: open5gs-mongodb
